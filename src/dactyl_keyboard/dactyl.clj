@@ -53,6 +53,8 @@
 (def wall-xy-offset 5)                  ; offset in the x and/or y direction for the first downward-sloping part of the wall (negative)
 (def wall-thickness 2)                  ; wall thickness parameter; originally 5
 
+(def screw-head-diameter 5.5)          ; diameter of screw head in mm, used for counterbore holes on plate bottoms
+
 ;; Settings for column-style == :fixed
 ;; The defaults roughly match Maltron settings
 ;; http://patentimages.storage.googleapis.com/EP0219944A2/imgf0002.png
@@ -1391,7 +1393,11 @@
 
 ; Wall Thickness W:\t1.65
 (def screw-insert-outers (screw-insert-all-shapes (+ screw-insert-bottom-radius 1.65) (+ screw-insert-top-radius 1.65) (+ screw-insert-height 1)))
-(def screw-insert-screw-holes  (screw-insert-all-shapes 1.7 1.7 350))
+(def screw-insert-screw-holes (screw-insert-all-shapes 1.7 1.7 350))
+
+; Counterbore holes on bottom plate
+(def screw-head-radius (float (/ (float (* screw-head-diameter 1.067)) 2)))
+(def screw-insert-screw-counterbore-holes (screw-insert-all-shapes screw-head-radius screw-head-radius 350))
 
 ; Connectors between outer column and right wall when 1.5u keys are used
 (def pinky-connectors
@@ -1466,24 +1472,64 @@
 
 (spit "things/right-plate.scad"
       (write-scad
-        (extrude-linear
-          {:height 2.6 :center false}
-          (project
-            (difference
-              (union
-                key-holes
-                key-holes-inner
-                pinky-connectors
-                extra-connectors
-                connectors
-                inner-connectors
-                thumb-type
-                thumb-connector-type
-                case-walls
-                thumbcaps-fill-type
-                caps-fill
-                screw-insert-outers)
-              (translate [0 0 -10] screw-insert-screw-holes))))))
+        (difference
+          (extrude-linear
+            {:height 4 :center false}
+            (project
+              (difference
+                (union
+                  key-holes
+                  key-holes-inner
+                  pinky-connectors
+                  extra-connectors
+                  connectors
+                  inner-connectors
+                  thumb-type
+                  thumb-connector-type
+                  case-walls
+                  thumbcaps-fill-type
+                  caps-fill
+                  screw-insert-outers
+                  )
+                (translate [0 0 -10] screw-insert-screw-holes)
+                )))
+           (translate [0 0 0]
+           (extrude-linear
+            {:height 2 :center false}
+              (project
+                (translate [0 0 0] screw-insert-screw-counterbore-holes)
+              )))
+          )))
+(spit "things/left-plate.scad"
+      (write-scad
+        (difference
+          (extrude-linear
+            {:height 4 :center false}
+            (project
+              (difference
+                (union
+                  key-holes
+                  key-holes-inner
+                  pinky-connectors
+                  extra-connectors
+                  connectors
+                  inner-connectors
+                  thumb-type
+                  thumb-connector-type
+                  case-walls
+                  thumbcaps-fill-type
+                  caps-fill
+                  screw-insert-outers
+                  )
+                (translate [0 0 -10] screw-insert-screw-holes)
+                )))
+           (translate [0 0 2]
+           (extrude-linear
+            {:height 2 :center false}
+              (project
+                (translate [0 0 0] screw-insert-screw-counterbore-holes)
+              )))
+          )))
 
 (spit "things/right-plate-laser.scad"
       (write-scad
