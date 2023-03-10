@@ -1396,7 +1396,7 @@
 (def screw-insert-screw-holes (screw-insert-all-shapes 1.7 1.7 350))
 
 ; Counterbore holes on bottom plate
-(def screw-head-radius (float (/ (float (* screw-head-diameter 1.067)) 2)))
+(def screw-head-radius (float (/ (float (* screw-head-diameter 1.083)) 2)))
 (def screw-insert-screw-counterbore-holes (screw-insert-all-shapes screw-head-radius screw-head-radius 350))
 
 ; Connectors between outer column and right wall when 1.5u keys are used
